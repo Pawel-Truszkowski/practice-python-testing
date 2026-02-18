@@ -15,9 +15,21 @@ def test_successful_payment():
    assert result is True
    mock_gateway.pay.assert_called_once_with(payment_data)
    
+def test_unsuccessful_payment():
+   mock_gateway = Mock()
+   mock_gateway.pay.return_value = False
+   payment_data = {
+      "amount": 100, 
+      "currency": "PLN"
+   }
+   result = send_payment(payment_data=payment_data, gateway=mock_gateway)
+   
+   assert result is False
+   mock_gateway.pay.assert_called_once_with(payment_data)
+   
 def test_payment_exception():
    mock_gateway = Mock()
-   mock_gateway.side_effect = Exception("Payment failed!")
+   mock_gateway.pay.side_effect = Exception("Payment failed!")
    
    result = send_payment({}, gateway=mock_gateway)
    
